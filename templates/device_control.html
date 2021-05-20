@@ -1,0 +1,89 @@
+{% extends "basic.html" %}
+
+{% block content %}
+    <div class="row h-100 center-block">
+    	<div class="col-xl-1 text-center">
+            <button type="button" class="btn btn-primary" id="toggler">On</button>
+        </div>
+
+        <div class="col-xl-3 text-center">
+        	Power
+        	<input type="range" min="1" max="100" value="50" class="slider" id="power">
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block js %}
+
+{{ super() }}
+
+{% assets "paho" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	client = new Paho.MQTT.Client("ws://127.0.0.1:8883/mqtt", 'jsclient');
+	client.onConnectionLost = onConnectionLost;
+	client.onMessageArrived = onMessageArrived;
+	client.connect({onSuccess:onConnect});
+
+	function onConnect() {
+		console.log("MQTT connected");
+		client.subscribe("/{{ dev.id }}/status");
+	};
+
+	function onConnectionLost(responseObject) {
+		if (responseObject.errorCode !== 0)
+			console.log("onConnectionLost:"+responseObject.errorMessage);
+	};
+
+	function onMessageArrived(message) {
+  		var status = message.payloadString.split(';')
+
+  		//On-off toggler
+  		if(status[0] == "0")
+  			$( "#toggler" ).text("On")
+  		else
+  			$( "#toggler" ).text("Off")
+
+  		console.log(Number(status[1]))
+
+  		//Power range slider
+		$( '#power' ).val(Number(status[1])) 
+	};
+
+
+
+	$( "#toggler" ).click(function() {
+  		message = new Paho.MQTT.Message( $(this).text() == 'On' ? "1" : "0");
+		message.destinationName = "/{{ dev.id }}/turn";
+		client.send(message);
+
+		message = new Paho.MQTT.Message( ( $(this).text() == 'On' ? "1;" : "0;")  + $( '#power' ).val());
+		message.destinationName = "/{{ dev.id }}/status";
+		client.send(message);
+	});
+
+	$('input[type=range]').on('input', function () {
+		//Here we can do some filtering so we don't push too many messages, but so far we just pass all the events
+		$(this).trigger('change');
+	});
+
+	$( '#power' ).on('change', function () {
+		console.log("Power changed to " + $(this).val())
+		message = new Paho.MQTT.Message($(this).val());
+		message.destinationName = "/{{ dev.id }}/power";
+		client.send(message);
+
+		message = new Paho.MQTT.Message( ($( "#toggler" ).text() == 'On' ? "0;" : "1;")  + $(this).val());
+		message.destinationName = "/{{ dev.id }}/status";
+		client.send(message);
+	});
+
+})
+
+</script>
+{% endblock %}

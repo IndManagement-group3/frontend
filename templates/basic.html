@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Beshbarmak control suite</title>
+
+    {% block styles %}
+    {% assets "bs_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}"/>
+    {% endassets %}
+    {% assets "main_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}"/>
+    {% endassets %}
+
+    <style>
+        #header {
+            margin-top:10px;
+        }
+
+        .margin-bottom {
+            margin-bottom:20px;
+        }
+
+        #footer {
+            border-top-style:double;
+            border-width: 3px;
+        }
+    </style>
+    {% endblock %}
+
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">
+        <img src="/static/beshbarmak.jpg" style="max-height:40px" href="/" alt="DOUBLE RAINBOW">
+        control suite
+    </a>
+
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/devices">Devices</a>
+        </li>
+
+        {% block navbared %}
+        {% endblock %}
+    </ul>
+</nav>
+
+<div class="container-fluid min-height-80vh under-header">
+    {% block content %}{% endblock %}
+
+    <div id="footer" class="row" style="text-align:right">
+        <div class="col">
+            <p>Team #3 {insert names here}</p>
+            <p><a href="https://github.com/IndManagement-group3">Team github</a></p>
+        </div>
+    </div>
+</div>
+
+
+{% block js %}
+{% assets "jq_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+{% assets "bs_js" %}
+<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+{% endblock %}
+
+</body>
+</html>
