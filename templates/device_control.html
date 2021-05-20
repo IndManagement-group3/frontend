@@ -1,6 +1,12 @@
 {% extends "basic.html" %}
 
 {% block content %}
+	<div class="row h-100 center-block">
+		<div class="col-xl-12 text-center">
+            {{ dev.name }}
+        </div>
+	</div>
+
     <div class="row h-100 center-block">
     	<div class="col-xl-1 text-center">
             <button type="button" class="btn btn-primary" id="toggler">On</button>
@@ -9,6 +15,12 @@
         <div class="col-xl-3 text-center">
         	Power
         	<input type="range" min="1" max="100" value="50" class="slider" id="power">
+        </div>
+
+        <div class="col-xl-6 text-center"></div>
+
+        <div class="col-xl-2 text-center">
+            <a  href="/remove_device?id={{ dev.id }}" class="btn btn-primary" role="button">Delete</a>
         </div>
 
     </div>
@@ -25,7 +37,7 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
-	client = new Paho.MQTT.Client("ws://127.0.0.1:8883/mqtt", 'jsclient');
+	client = new Paho.MQTT.Client("ws://192.168.31.26:8883/mqtt", Date());
 	client.onConnectionLost = onConnectionLost;
 	client.onMessageArrived = onMessageArrived;
 	client.connect({onSuccess:onConnect});
@@ -49,8 +61,6 @@ $(document).ready(function(){
   		else
   			$( "#toggler" ).text("Off")
 
-  		console.log(Number(status[1]))
-
   		//Power range slider
 		$( '#power' ).val(Number(status[1])) 
 	};
@@ -62,9 +72,9 @@ $(document).ready(function(){
 		message.destinationName = "/{{ dev.id }}/turn";
 		client.send(message);
 
-		message = new Paho.MQTT.Message( ( $(this).text() == 'On' ? "1;" : "0;")  + $( '#power' ).val());
-		message.destinationName = "/{{ dev.id }}/status";
-		client.send(message);
+		//message = new Paho.MQTT.Message( ( $(this).text() == 'On' ? "1;" : "0;")  + $( '#power' ).val());
+		//message.destinationName = "/{{ dev.id }}/status";
+		//client.send(message);
 	});
 
 	$('input[type=range]').on('input', function () {
@@ -78,9 +88,9 @@ $(document).ready(function(){
 		message.destinationName = "/{{ dev.id }}/power";
 		client.send(message);
 
-		message = new Paho.MQTT.Message( ($( "#toggler" ).text() == 'On' ? "0;" : "1;")  + $(this).val());
-		message.destinationName = "/{{ dev.id }}/status";
-		client.send(message);
+		//message = new Paho.MQTT.Message( ($( "#toggler" ).text() == 'On' ? "0;" : "1;")  + $(this).val());
+		//message.destinationName = "/{{ dev.id }}/status";
+		//client.send(message);
 	});
 
 })
