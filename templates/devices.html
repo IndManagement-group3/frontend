@@ -5,7 +5,7 @@
 
     	{% for dev in devices %}
 	    	<div class="col-xl-3 text-center" id="device-{{ dev.id }}">
-	            <a href="devices?id={{ dev.id }}">{{ dev.name }}</a>
+	            <a href="devices?id={{ dev.id }}">{{ dev.alias }}</a>
 	        </div>
     	{% endfor %}
 

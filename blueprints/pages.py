@@ -14,7 +14,14 @@ def mainpage():
 @pages.route("/devices")
 def devices():
 
-	devices = json.loads(request.cookies.get('devices'))
+	try:
+		devices = json.loads(request.cookies.get('devices'))
+	except TypeError:
+		resp = make_response(redirect("/devices", code=302))
+		resp.set_cookie('devices', json.dumps([{"id":"new", "alias":"New"}]))
+
+		return resp
+
 	id = request.args.get("id")
 
 	if id == None:
@@ -45,12 +52,17 @@ def add_device():
 		devices = json.loads(request.cookies.get('devices'))
 
 		id = request.form['id']
-		name = request.form['name']
+		alias = request.form['alias']
+		username = request.form['username']
 		password = request.form['password']
 
-		#if some field is empty - redirect them back to the form
-		if id == '' or name == '' or password == '':
+		#if id is empty - redirect them back to the form
+		if id == '':
 			return redirect("/devices?id=new", code=302)
+
+		#IF no alias is specified, use id
+		if alias == '':
+			alias = id
 
 		#if the device already exists - delete it first (thus updating it)
 		try:
@@ -59,7 +71,7 @@ def add_device():
 		except StopIteration:
 			pass
 
-		devices.append({"id": id, "name": name, "password": password})
+		devices.append({"id": id, "alias": alias, "username": username, "password": password})
 		
 		resp = make_response(redirect("/devices", code=302))
 		resp.set_cookie('devices', json.dumps(devices))

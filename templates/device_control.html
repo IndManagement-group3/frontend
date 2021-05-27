@@ -3,7 +3,7 @@
 {% block content %}
 	<div class="row h-100 center-block">
 		<div class="col-xl-12 text-center">
-            {{ dev.name }}
+            {{ dev.alias }}
         </div>
 	</div>
 
@@ -37,10 +37,14 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
-	client = new Paho.MQTT.Client("ws://192.168.31.26:8883/mqtt", Date());
+	client = new Paho.MQTT.Client("ws://127.0.0.1:8883/mqtt", "fan-client-" + Date.now() );
 	client.onConnectionLost = onConnectionLost;
 	client.onMessageArrived = onMessageArrived;
-	client.connect({onSuccess:onConnect});
+	client.connect({
+		userName:"{{ dev.username }}",
+		password:"{{ dev.password }}",
+		onSuccess:onConnect
+	});
 
 	function onConnect() {
 		console.log("MQTT connected");
