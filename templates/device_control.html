@@ -97,6 +97,11 @@ $(document).ready(function(){
 		//client.send(message);
 	});
 
+	setInterval(function(){
+		message = new Paho.MQTT.Message();
+		message.destinationName = "/{{ dev.id }}/keepalive";
+		client.send(message); 
+	}, 300);
 })
 
 </script>
